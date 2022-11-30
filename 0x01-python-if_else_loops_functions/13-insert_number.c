@@ -1,68 +1,45 @@
-#include "lists.h"
-#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
-
+#include <stdlib.h>
+#include "lists.h"
 /**
- * insert_node - inserts a node sorted in a linked list of ints
- * @head: double pointer to head of LL, needed for modification in edge
- * cases
- * @number: data for new node
- *
- * Return: pointer to newly created node, NULL on failure
+ * insert_node - inserts a node
+ * @head: head
+ * @number: int to add
+ * Return: new node
  */
 listint_t *insert_node(listint_t **head, int number)
 {
-	listint_t *cur_node = NULL, *new_node = NULL;
+	listint_t *temp = NULL, *node = NULL;
 
-	if (!head)
+	if (head == NULL)
 		return (NULL);
-	else if (!(*head))
+
+	node = malloc(sizeof(listint_t *));
+	if (node == NULL)
+		return (NULL);
+	node->next = NULL;
+	node->n = number;
+
+	temp = *head;
+	while (temp)
 	{
-		new_node = create_node(number);
-		*head = new_node;
-		return (new_node);
-	}
-	cur_node = *head;
-	while (cur_node)
-	{
-		/* need to insert at head */
-		if (cur_node->n >= number)
+		if (temp->n >= number)
 		{
-			new_node = create_node(number);
-			new_node->next = cur_node;
-			*head = new_node;
-			return (new_node);
+			node->next = temp;
+			*head = node;
+			return (node);
 		}
-		else if (cur_node->n <= number)
+		else if (temp->n <= number && temp->next->n >= number)
 		{
-			if (!cur_node->next || cur_node->next->n >= number)
+			if (temp->next != NULL)
 			{
-				new_node = create_node(number);
-				new_node->next = cur_node->next;
-				cur_node->next = new_node;
-				return (cur_node->next);
+				node->next = temp->next;
+				temp->next = node;
+				return (node);
 			}
 		}
-		cur_node = cur_node->next;
+		temp = temp->next;
 	}
-	return (NULL); /* failed */
-}
 
-/**
- * create_node - creates a new node for the LL
- * @n: data to insert into new node
- *
- * Return: pointer to newly allocated node
- */
-listint_t *create_node(int n)
-{
-	listint_t *ret = NULL;
-
-	ret = malloc(sizeof(listint_t));
-	if (!ret)
-		return (NULL);
-	ret->next = NULL;
-	ret->n = n;
-	return (ret);
+	return (NULL);
 }
